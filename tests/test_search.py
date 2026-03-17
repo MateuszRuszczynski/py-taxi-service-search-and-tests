@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from taxi.models import Manufacturer, Car
+from taxi.models import Manufacturer, Car, Driver
 
 
 class ManufacturerSearchTestCase(TestCase):
@@ -69,4 +69,24 @@ class CarSearchTestCase(TestCase):
         self.assertEqual(
             len(response.context["car_list"]),
             Car.objects.count(),
+        )
+
+
+class DriverSearchTestCase(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="test",
+            password="test123"
+        )
+        self.client.login(username="test", password="test123")
+
+    def test_search_driver_by_username(self):
+        response = self.client.get(reverse("taxi:driver-list"), {"username": "test"})
+        self.assertIn(self.user, response.context["driver_list"])
+
+    def test_empty_search_driver(self):
+        response = self.client.get(reverse("taxi:driver-list"), {"username": ""})
+        self.assertEqual(
+            len(response.context["driver_list"]),
+            Driver.objects.count(),
         )
