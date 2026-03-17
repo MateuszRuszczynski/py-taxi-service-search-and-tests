@@ -81,11 +81,15 @@ class DriverSearchTestCase(TestCase):
         self.client.login(username="test", password="test123")
 
     def test_search_driver_by_username(self):
-        response = self.client.get(reverse("taxi:driver-list"), {"username": "test"})
+        response = self.client.get(
+            reverse("taxi:driver-list"), {"username": "test"}
+        )
         self.assertIn(self.user, response.context["driver_list"])
 
     def test_empty_search_driver(self):
-        response = self.client.get(reverse("taxi:driver-list"), {"username": ""})
+        response = self.client.get(
+            reverse("taxi:driver-list"), {"username": ""}
+        )
         self.assertEqual(
             len(response.context["driver_list"]),
             Driver.objects.count(),
